@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    @RequestMapping("/custom-error")
+    @RequestMapping("/error")
     public String handleError() {
-        return "error";
+        return "error";  // This should match your error.html template
     }
 }
