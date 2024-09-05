@@ -10,12 +10,16 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String room;
+    private String roomName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String email;
 
     // Getters and Setters
     // Add other necessary fields for booking
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
 
     public Long getId() {
         return id;
@@ -25,12 +29,12 @@ public class Booking {
         this.id = id;
     }
 
-    public String getRoom() {
-        return room;
+    public String getRoomName() {
+        return roomName;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
+    public void setRoomName(String room) {
+        this.roomName = room;
     }
 
     public LocalDateTime getStartTime() {
