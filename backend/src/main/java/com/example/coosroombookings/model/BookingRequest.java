@@ -14,4 +14,10 @@ public class BookingRequest {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    public BookingRequest(String email, String roomName, LocalDateTime startTime, LocalDateTime endTime) {
+        this.email = email;
+        this.roomName = roomName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
