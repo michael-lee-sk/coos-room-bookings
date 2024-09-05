@@ -12,9 +12,13 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import org.springframework.security.test.context.support.WithMockUser;
+
 
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
@@ -31,13 +35,15 @@ public class BookingControllerTest {
                 LocalDateTime.of(2024, 9, 5, 10, 0),
                 LocalDateTime.of(2024, 9, 5, 12, 0));
 
-        Mockito.doNothing().when(bookingService).bookRoom(Mockito.any(BookingRequest.class));
+        // Mock the behavior of bookingService.bookRoom() to return true
+        when(bookingService.bookRoom(any(BookingRequest.class)))
+                .thenReturn(true);  // Assuming it returns true if booking is successful
 
         mockMvc.perform(post("/api/rooms/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"user@example.com\", \"roomName\": \"Conference Room\", " +
                                 "\"startTime\": \"2024-09-05T10:00:00\", \"endTime\": \"2024-09-05T12:00:00\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk())  // Expecting status 200 OK
                 .andExpect(content().string("Room booked successfully"));
     }
 }
