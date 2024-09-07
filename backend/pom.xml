@@ -146,12 +146,14 @@
             <version>2.14.1</version>
         </dependency>
 
-        <!-- Remove or Update this if you no longer need it -->
-        <!-- <dependency>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.22.0</version>
-        </dependency> -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version> <!-- Latest stable version -->
+            <scope>test</scope>
+        </dependency>
+
+
 
         <!-- Google HTTP Client -->
         <dependency>
