@@ -1,34 +1,50 @@
-
 package com.example.coosroombookings.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDate;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
-@Setter
-@Getter
-@Entity
 public class Booking {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String roomName;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    // Getters and Setters
-    // Add other necessary fields for booking
-    private String email;
+    private Long roomId;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-    public Booking(Long id, String roomName, LocalDateTime startTime, LocalDateTime endTime, String email) {
+    public Booking(Long id, Long roomId, LocalDate startDate, LocalDate endDate) {
         this.id = id;
-        this.roomName = roomName;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.email = email;
+        this.roomId = roomId;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
-    public Booking() {}
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 }

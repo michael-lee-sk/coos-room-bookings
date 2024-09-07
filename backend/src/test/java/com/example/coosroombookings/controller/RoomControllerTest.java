@@ -1,6 +1,5 @@
 package com.example.coosroombookings.controller;
 
-import com.example.coosroombookings.config.TestSecurityConfig;
 import com.example.coosroombookings.model.Room;
 import com.example.coosroombookings.service.RoomService;
 import org.junit.jupiter.api.Test;
@@ -10,9 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Arrays;
 
@@ -50,9 +47,9 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$[1].name", is("Meeting Room")));
     }
 
-    // Test creating a room
+    // Test creating a new room
     @Test
-    public void testAddRoom() throws Exception {
+    public void testCreateRoom() throws Exception {
         Room room = new Room(1L, "New Room", 8);
 
         when(roomService.createRoom(any(Room.class))).thenReturn(room);
@@ -64,7 +61,6 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.name", is("New Room")))
                 .andExpect(jsonPath("$.capacity", is(8)));
     }
-
 
     // Test updating a room
     @Test
@@ -81,7 +77,6 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.capacity", is(12)));
     }
 
-
     // Test deleting a room
     @Test
     public void testDeleteRoom() throws Exception {
@@ -91,10 +86,8 @@ public class RoomControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-
     // Test searching rooms
     @Test
-    @WithMockUser(username = "admin", roles = {"USER"})
     public void testSearchRooms() throws Exception {
         Room room1 = new Room(1L, "Conference Room", 10);
         Room room2 = new Room(2L, "Meeting Room", 5);

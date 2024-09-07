@@ -1,23 +1,26 @@
 package com.example.coosroombookings.controller;
 
-import com.example.coosroombookings.model.BookingRequest;
+import com.example.coosroombookings.controller.BookingController;
+import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.service.BookingService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Arrays;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import org.springframework.security.test.context.support.WithMockUser;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(BookingController.class)
@@ -29,22 +32,44 @@ public class BookingControllerTest {
     @MockBean
     private BookingService bookingService;
 
+    // Test creating a booking
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})  // Mock an authenticated user
-    public void testBookRoom() throws Exception {
-        BookingRequest bookingRequest = new BookingRequest("user@example.com", "Conference Room",
-                LocalDateTime.of(2024, 9, 5, 10, 0),
-                LocalDateTime.of(2024, 9, 5, 12, 0));
+    public void testCreateBooking() throws Exception {
+        Booking booking = new Booking(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
 
-        // Mock the behavior of bookingService.bookRoom() to return true
-        when(bookingService.bookRoom(any(BookingRequest.class)))
-                .thenReturn(true);
+        when(bookingService.createBooking(any(Booking.class))).thenReturn(booking);
 
-        mockMvc.perform(post("/api/rooms/book")
+        mockMvc.perform(post("/api/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\": \"user@example.com\", \"roomName\": \"Conference Room\", " +
-                                "\"startTime\": \"2024-09-05T10:00:00\", \"endTime\": \"2024-09-05T12:00:00\"}"))
-                .andExpect(status().isOk())  // Expecting status 200 OK
-                .andExpect(content().string("Room booked successfully"));
+                        .content("{\"roomId\": 1, \"startDate\": \"2024-09-01\", \"endDate\": \"2024-09-02\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.roomId", is(1)))
+                .andExpect(jsonPath("$.startDate", is("2024-09-01")))
+                .andExpect(jsonPath("$.endDate", is("2024-09-02")));
+    }
+
+    // Test getting bookings
+    @Test
+    public void testGetBookings() throws Exception {
+        Booking booking1 = new Booking(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
+        Booking booking2 = new Booking(2L, 2L, LocalDate.now(), LocalDate.now().plusDays(2));
+
+        when(bookingService.getAllBookings()).thenReturn(Arrays.asList(booking1, booking2));
+
+        mockMvc.perform(get("/api/bookings"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].roomId", is(1)))
+                .andExpect(jsonPath("$[1].roomId", is(2)));
+    }
+
+    // Test deleting a booking
+    @Test
+    public void testDeleteBooking() throws Exception {
+        doNothing().when(bookingService).deleteBookingById(1L);
+
+        mockMvc.perform(delete("/api/bookings/1"))
+                .andExpect(status().isNoContent());
     }
 }

@@ -1,31 +1,39 @@
 package com.example.coosroombookings.controller;
 
-import com.example.coosroombookings.model.BookingRequest;
+import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/rooms")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     @Autowired
     private BookingService bookingService;
 
-    @PostMapping("/book")
-    public ResponseEntity<?> bookRoom(@RequestBody BookingRequest request) {
-        try {
-            // Use the BookingService to handle the booking and Google Calendar event
-            boolean success = bookingService.bookRoom(request);
+    // Create a new booking
+    @PostMapping
+    public ResponseEntity<Booking> createBooking(@RequestBody Booking bookingRequest) {
+        Booking createdBooking = bookingService.createBooking(bookingRequest);
+        return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
+    }
 
-            if (success) {
-                return ResponseEntity.ok("Room booked successfully and added to your Google Calendar.");
-            } else {
-                return ResponseEntity.status(500).body("Error booking room.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error booking room: " + e.getMessage());
-        }
+    // Get all bookings
+    @GetMapping
+    public ResponseEntity<List<Booking>> getAllBookings() {
+        List<Booking> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(bookings);
+    }
+
+    // Delete a booking by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+        bookingService.deleteBookingById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
