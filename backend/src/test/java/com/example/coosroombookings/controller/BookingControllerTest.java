@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -82,5 +83,20 @@ public class BookingControllerTest {
         mockMvc.perform(delete("/api/bookings/1")
                         .with(csrf()))  // Adding CSRF token for DELETE request
                 .andExpect(status().isNoContent());
+    }
+
+    @WithMockUser(roles = "USER")
+    @Test
+    public void testGetBookingById() throws Exception {
+        Booking booking = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+
+        when(bookingService.getBookingById(1L)).thenReturn(Optional.of(booking));
+
+        mockMvc.perform(get("/api/bookings/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.roomId", is(1)))
+                .andExpect(jsonPath("$.startDate", is("2024-09-01")))
+                .andExpect(jsonPath("$.endDate", is("2024-09-02")));
     }
 }

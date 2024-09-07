@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -14,16 +15,18 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     public Booking createBooking(Booking booking) {
-        // Make sure the request-provided dates are used and not overwritten by LocalDate.now()
         return bookingRepository.save(booking);
     }
-
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-    public void deleteBookingById(Long bookingId) {
-        bookingRepository.deleteById(bookingId);
+    public Optional<Booking> getBookingById(Long id) {
+        return bookingRepository.findById(id);  // New method to find booking by ID
+    }
+
+    public void deleteBookingById(Long id) {
+        bookingRepository.deleteById(id);
     }
 }
