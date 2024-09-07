@@ -17,6 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import org.springframework.security.test.context.support.WithMockUser;
+
 
 @WebMvcTest(RoomController.class)
 public class RoomControllerTest {
@@ -28,13 +30,14 @@ public class RoomControllerTest {
     private RoomService roomService;
 
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})  // Mock an authenticated user
     public void testGetRooms() throws Exception {
         Room room1 = new Room(1L, "Conference Room", 10);
         Room room2 = new Room(2L, "Meeting Room", 5);
 
         Mockito.when(roomService.getAvailableRooms()).thenReturn(Arrays.asList(room1, room2));
 
-        mockMvc.perform(get("/api/rooms"))
+        mockMvc.perform(get("/api/rooms/available"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$", hasSize(2)))

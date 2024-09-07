@@ -1,21 +1,26 @@
 package com.example.coosroombookings.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/", "/login**", "/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .defaultSuccessUrl("/rooms", true);  // Redirect after successful login
+                .authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .antMatchers("/", "/login**", "/css/**", "/js/**").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 ->
+                        oauth2
+                                .defaultSuccessUrl("/rooms", true)
+                );
+
+        return http.build();
     }
 }

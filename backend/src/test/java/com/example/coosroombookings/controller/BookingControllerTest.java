@@ -30,6 +30,7 @@ public class BookingControllerTest {
     private BookingService bookingService;
 
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})  // Mock an authenticated user
     public void testBookRoom() throws Exception {
         BookingRequest bookingRequest = new BookingRequest("user@example.com", "Conference Room",
                 LocalDateTime.of(2024, 9, 5, 10, 0),
@@ -37,7 +38,7 @@ public class BookingControllerTest {
 
         // Mock the behavior of bookingService.bookRoom() to return true
         when(bookingService.bookRoom(any(BookingRequest.class)))
-                .thenReturn(true);  // Assuming it returns true if booking is successful
+                .thenReturn(true);
 
         mockMvc.perform(post("/api/rooms/book")
                         .contentType(MediaType.APPLICATION_JSON)
