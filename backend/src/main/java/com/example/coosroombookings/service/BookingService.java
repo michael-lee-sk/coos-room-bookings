@@ -14,8 +14,10 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     public Booking createBooking(Booking booking) {
+        // Make sure the request-provided dates are used and not overwritten by LocalDate.now()
         return bookingRepository.save(booking);
     }
+
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();

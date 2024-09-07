@@ -9,11 +9,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()  // Disable CSRF for testing
-                .authorizeRequests()
-                .anyRequest().permitAll()  // Allow all requests without authentication
+                .csrf().disable()  // Forcefully disable CSRF to prevent 403 errors
+                .authorizeRequests().anyRequest().permitAll()  // Allow all traffic without authentication or authorization
                 .and()
-                .headers().frameOptions().disable();  // Optional: allow using H2 database console if needed
+                .headers().frameOptions().disable();  // Optional: for H2 console
 
         return http.build();
     }

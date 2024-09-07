@@ -1,6 +1,5 @@
 package com.example.coosroombookings.controller;
 
-import com.example.coosroombookings.controller.BookingController;
 import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.service.BookingService;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,27 +33,31 @@ public class BookingControllerTest {
     @MockBean
     private BookingService bookingService;
 
-    // Test creating a booking
+    // Test to create a booking with fixed dates
+    @WithMockUser(roles = "USER")
     @Test
     public void testCreateBooking() throws Exception {
-        Booking booking = new Booking(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
+        // Using fixed dates to ensure test consistency
+        Booking booking = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
 
         when(bookingService.createBooking(any(Booking.class))).thenReturn(booking);
 
         mockMvc.perform(post("/api/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"roomId\": 1, \"startDate\": \"2024-09-01\", \"endDate\": \"2024-09-02\"}"))
+                        .content("{\"roomId\": 1, \"startDate\": \"2024-09-01\", \"endDate\": \"2024-09-02\"}")
+                        .with(csrf()))  // Adding CSRF token for POST request
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.roomId", is(1)))
                 .andExpect(jsonPath("$.startDate", is("2024-09-01")))
                 .andExpect(jsonPath("$.endDate", is("2024-09-02")));
     }
 
-    // Test getting bookings
+    // Test to get all bookings
+    @WithMockUser(roles = "USER")
     @Test
     public void testGetBookings() throws Exception {
-        Booking booking1 = new Booking(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
-        Booking booking2 = new Booking(2L, 2L, LocalDate.now(), LocalDate.now().plusDays(2));
+        Booking booking1 = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Booking booking2 = new Booking(2L, 2L, LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 2));
 
         when(bookingService.getAllBookings()).thenReturn(Arrays.asList(booking1, booking2));
 
@@ -61,15 +66,21 @@ public class BookingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].roomId", is(1)))
-                .andExpect(jsonPath("$[1].roomId", is(2)));
+                .andExpect(jsonPath("$[0].startDate", is("2024-09-01")))
+                .andExpect(jsonPath("$[0].endDate", is("2024-09-02")))
+                .andExpect(jsonPath("$[1].roomId", is(2)))
+                .andExpect(jsonPath("$[1].startDate", is("2024-10-01")))
+                .andExpect(jsonPath("$[1].endDate", is("2024-10-02")));
     }
 
-    // Test deleting a booking
+    // Test to delete a booking
+    @WithMockUser(roles = "USER")
     @Test
     public void testDeleteBooking() throws Exception {
         doNothing().when(bookingService).deleteBookingById(1L);
 
-        mockMvc.perform(delete("/api/bookings/1"))
+        mockMvc.perform(delete("/api/bookings/1")
+                        .with(csrf()))  // Adding CSRF token for DELETE request
                 .andExpect(status().isNoContent());
     }
 }
