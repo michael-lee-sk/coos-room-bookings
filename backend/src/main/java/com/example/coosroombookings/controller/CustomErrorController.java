@@ -2,13 +2,15 @@ package com.example.coosroombookings.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    @RequestMapping("/error")
+    @GetMapping("/error")
     public String handleError() {
-        return "error";  // This should match your error.html template
+        return "error";  // Make sure you have 'error.html' in 'src/main/resources/templates'
     }
+
+    // The getErrorPath method is no longer necessary, so it can be removed.
 }

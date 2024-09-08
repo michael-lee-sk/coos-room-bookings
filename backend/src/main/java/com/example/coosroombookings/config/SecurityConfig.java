@@ -11,21 +11,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()  // Disable CSRF for testing purposes
+                .csrf().disable()  // Disable CSRF for testing purposes (enable this in production)
                 .authorizeRequests()
-                .antMatchers("/", "/login", "/oauth2/**", "/error", "/home").permitAll()  // Allow access to landing pages, login, etc.
-                .anyRequest().authenticated()  // Protect other endpoints (e.g., room bookings)
+                .antMatchers("/", "/login", "/oauth2/**", "/error", "/home").permitAll()  // Allow public access to these routes
+                .anyRequest().authenticated()  // Protect other endpoints
                 .and()
                 .oauth2Login()
-                .loginPage("/login")  // Redirect to custom login page if unauthenticated
+                .loginPage("/login")  // Redirect to this page for login
                 .defaultSuccessUrl("/home", true)  // After successful login, redirect to /home
                 .and()
-                .headers().frameOptions().disable();  // Optional: Disable frame options for H2 console (if needed)
+                .logout()
+                .logoutSuccessUrl("/login?logout")  // Redirect to login page after logout
+                .and()
+                .headers().frameOptions().disable();  // Disable frame options if needed for H2 console
 
         return http.build();
     }
 
-    // Handler for successful authentication (optional, but useful for handling post-login redirects)
+    // Optional: Redirect to a specific URL after successful login
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return new SimpleUrlAuthenticationSuccessHandler("/home");

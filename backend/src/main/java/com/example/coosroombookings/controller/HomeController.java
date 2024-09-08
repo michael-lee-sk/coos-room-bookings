@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/home")
     public String home() {
-        return "home"; // This should map to a home.html page in src/main/resources/templates
+        return "home";  // Ensure you have a 'home.html' file in 'src/main/resources/templates'
     }
 }
