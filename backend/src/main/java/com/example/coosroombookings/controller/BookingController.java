@@ -24,6 +24,9 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Booking> createBooking(@Valid @RequestBody Booking booking) {
+        if (booking == null) {
+            return ResponseEntity.badRequest().build();  // Return 400 if booking input is null
+        }
         Booking savedBooking = bookingService.createBooking(booking);
         return ResponseEntity.status(201).body(savedBooking);
     }
@@ -35,13 +38,20 @@ public class BookingController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable Long id) {
-        Optional<Booking> booking = bookingService.getBookingById(id);
-        return booking.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Booking> booking = Optional.ofNullable(bookingService.getBookingById(id).orElse(null));
+        if (booking.isEmpty()) {
+            return ResponseEntity.status(404).build();  // Return 404 if booking not found
+        }
+        return ResponseEntity.ok(booking.get());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBookingById(@PathVariable Long id) {
-        bookingService.deleteBookingById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            bookingService.deleteBookingById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).build();  // Return 404 if booking not found for deletion
+        }
     }
 }
