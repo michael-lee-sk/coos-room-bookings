@@ -51,6 +51,14 @@ public class RoomControllerTest {
     }
 
     @Test
+    public void testAddRoom_NullInput() {
+        // Test with null input to simulate a bad request scenario
+        ResponseEntity<Room> response = roomController.addRoom(null);
+
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
     public void testGetAvailableRooms() {
         List<Room> mockRooms = Arrays.asList(
                 new Room(1L, "Room A", 5),
@@ -71,6 +79,21 @@ public class RoomControllerTest {
     }
 
     @Test
+    public void testGetAvailableRooms_EmptyList() {
+        LocalDateTime startDate = LocalDateTime.of(2023, 9, 10, 14, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 9, 12, 12, 0);
+
+        // Simulate an empty result
+        when(roomService.getAvailableRooms(startDate, endDate)).thenReturn(Arrays.asList());
+
+        // Call the controller method
+        List<Room> availableRooms = roomController.getAvailableRooms(startDate, endDate);
+
+        assertEquals(0, availableRooms.size());
+        verify(roomService).getAvailableRooms(startDate, endDate);
+    }
+
+    @Test
     public void testGetRoomById() {
         Room mockRoom = new Room();
         mockRoom.setId(1L);
@@ -85,6 +108,18 @@ public class RoomControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(mockRoom.getName(), response.getBody().getName());
         verify(roomService).findRoomById(1L);
+    }
+
+    @Test
+    public void testGetRoomById_NotFound() {
+        // Simulate the service returning null for a non-existent room
+        when(roomService.findRoomById(999L)).thenReturn(null);
+
+        // Call the controller method
+        ResponseEntity<Room> response = roomController.getRoomById(999L);
+
+        assertEquals(404, response.getStatusCodeValue());
+        verify(roomService).findRoomById(999L);
     }
 
     @Test
@@ -107,6 +142,22 @@ public class RoomControllerTest {
     }
 
     @Test
+    public void testUpdateRoom_NotFound() {
+        Room mockRoom = new Room();
+        mockRoom.setId(999L);
+        mockRoom.setName("Non-Existent Room");
+
+        // Simulate service returning null for a non-existent room
+        when(roomService.updateRoom(eq(999L), any(Room.class))).thenReturn(null);
+
+        // Call the controller method
+        ResponseEntity<Room> response = roomController.updateRoom(999L, mockRoom);
+
+        assertEquals(404, response.getStatusCodeValue());
+        verify(roomService).updateRoom(eq(999L), any(Room.class));
+    }
+
+    @Test
     public void testDeleteRoom() {
         // Simulate service behavior for deletion
         doNothing().when(roomService).deleteRoomById(1L);
@@ -116,6 +167,18 @@ public class RoomControllerTest {
 
         assertEquals(204, response.getStatusCodeValue());
         verify(roomService).deleteRoomById(1L);
+    }
+
+    @Test
+    public void testDeleteRoom_NotFound() {
+        // Simulate service throwing an exception for non-existent room
+        doThrow(new RuntimeException("Room not found")).when(roomService).deleteRoomById(999L);
+
+        // Call the controller method and expect an exception
+        ResponseEntity<Void> response = roomController.deleteRoom(999L);
+
+        assertEquals(404, response.getStatusCodeValue());
+        verify(roomService).deleteRoomById(999L);
     }
 
     @Test

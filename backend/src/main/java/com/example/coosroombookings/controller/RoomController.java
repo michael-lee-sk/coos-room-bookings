@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -24,6 +25,9 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<Room> addRoom(@Valid @RequestBody Room room) {
+        if (room == null) {
+            return ResponseEntity.badRequest().build();  // Return 400 if input is null
+        }
         Room savedRoom = roomService.createRoom(room);
         return ResponseEntity.status(201).body(savedRoom);
     }
@@ -35,20 +39,30 @@ public class RoomController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
-        Room room = roomService.findRoomById(id);
-        return ResponseEntity.ok(room);
+        Optional<Room> room = Optional.ofNullable(roomService.findRoomById(id));
+        if (room.isEmpty()) {
+            return ResponseEntity.status(404).build();  // Return 404 if room not found
+        }
+        return ResponseEntity.ok(room.get());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @Valid @RequestBody Room updatedRoom) {
         Room room = roomService.updateRoom(id, updatedRoom);
+        if (room == null) {
+            return ResponseEntity.status(404).build();  // Return 404 if room not found for update
+        }
         return ResponseEntity.ok(room);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
-        roomService.deleteRoomById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            roomService.deleteRoomById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).build();  // Return 404 if room not found for deletion
+        }
     }
 
     @GetMapping("/search")
