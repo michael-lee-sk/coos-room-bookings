@@ -1,11 +1,15 @@
 package com.example.coosroombookings.service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.coosroombookings.model.Room;
 import com.example.coosroombookings.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -18,9 +22,14 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
-    // Get available rooms
-    public List<Room> getAvailableRooms() {
-        return roomRepository.findAll();  // Replace with actual logic if availability is based on booking status
+    // Get available rooms based on a date range
+    public List<Room> getAvailableRooms(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Room> allRooms = roomRepository.findAll();
+
+        // Filter rooms based on availability during the specified date range
+        return allRooms.stream()
+                .filter(room -> room.isAvailableDuring(startDate, endDate))
+                .collect(Collectors.toList());
     }
 
     // Get a room by ID

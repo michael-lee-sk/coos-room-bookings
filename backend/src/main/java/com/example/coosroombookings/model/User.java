@@ -1,6 +1,9 @@
+
 package com.example.coosroombookings.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
@@ -11,19 +14,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Username cannot be blank")
     private String username;
+
+    @NotBlank(message = "Password cannot be blank")
     private String password;
+
+    @Email(message = "Email should be valid")
     private String email;
+
     private boolean enabled;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 
-    // Default Constructor
     public User() {
     }
 
-    // Full Constructor (matches the one in your screenshot)
     public User(String username, String password, String email, boolean enabled) {
         this.username = username;
         this.password = password;

@@ -1,3 +1,4 @@
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Optional;
@@ -55,14 +57,17 @@ public class RoomControllerTest {
                 new Room(2L, "Room B", 10)
         );
 
-        // Simulate the service response
-        when(roomService.getAvailableRooms()).thenReturn(mockRooms);
+        LocalDateTime startDate = LocalDateTime.of(2023, 9, 10, 14, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 9, 12, 12, 0);
+
+        // Simulate the service response with params
+        when(roomService.getAvailableRooms(startDate, endDate)).thenReturn(mockRooms);
 
         // Call the controller method
-        List<Room> availableRooms = roomController.getAvailableRooms();
+        List<Room> availableRooms = roomController.getAvailableRooms(startDate, endDate);
 
         assertEquals(2, availableRooms.size());
-        verify(roomService).getAvailableRooms();
+        verify(roomService).getAvailableRooms(startDate, endDate);
     }
 
     @Test
