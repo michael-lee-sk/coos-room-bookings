@@ -9,9 +9,10 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Handle RuntimeException as a 500 Internal Server Error
     @ExceptionHandler(value = { RuntimeException.class })
     public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
-        return new ResponseEntity<>("Error: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Internal Server Error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
