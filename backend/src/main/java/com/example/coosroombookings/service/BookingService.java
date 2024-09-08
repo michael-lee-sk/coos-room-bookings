@@ -1,5 +1,7 @@
 package com.example.coosroombookings.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
