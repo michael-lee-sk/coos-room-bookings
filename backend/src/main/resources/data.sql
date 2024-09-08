@@ -5,7 +5,7 @@ SET FOREIGN_KEY_CHECKS = 0;  -- Temporarily disable foreign key checks
 TRUNCATE TABLE user_role;
 TRUNCATE TABLE booking;
 TRUNCATE TABLE role;
-TRUNCATE TABLE user;
+TRUNCATE TABLE "user";
 TRUNCATE TABLE room;
 
 SET FOREIGN_KEY_CHECKS = 1;  -- Re-enable foreign key checks
@@ -14,10 +14,10 @@ SET FOREIGN_KEY_CHECKS = 1;  -- Re-enable foreign key checks
 INSERT INTO role (name) VALUES ('ROLE_USER');
 INSERT INTO role (name) VALUES ('ROLE_ADMIN');
 
--- Insert initial users
-INSERT INTO user (username, password, email, enabled)
+-- Insert initial users (escaping "user" table)
+INSERT INTO "user" (username, password, email, enabled)
 VALUES ('admin', 'adminpassword', 'admin@example.com', TRUE);
-INSERT INTO user (username, password, email, enabled)
+INSERT INTO "user" (username, password, email, enabled)
 VALUES ('john', 'userpassword', 'john@example.com', TRUE);
 
 -- Assign roles to users
@@ -34,7 +34,7 @@ VALUES ('Meeting Room', 5);
 INSERT INTO room (name, capacity)
 VALUES ('Training Room', 20);
 
--- Insert initial bookings
+-- Insert initial bookings (escaping "user" table reference)
 INSERT INTO booking (user_id, room_id, start_time, end_time)
 VALUES (2, 1, '2024-09-10 09:00:00', '2024-09-10 10:00:00');
 INSERT INTO booking (user_id, room_id, start_time, end_time)

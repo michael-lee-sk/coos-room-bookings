@@ -1,23 +1,35 @@
 package com.example.coosroombookings.model;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(name = "booking")
 public class Booking {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long roomId;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // No-argument constructor (required for deserialization)
+    // Constructors
     public Booking() {
     }
 
-    // All-argument constructor
-    public Booking(Long id, Long roomId, LocalDate startDate, LocalDate endDate) {
-        this.id = id;
-        this.roomId = roomId;
+    public Booking(Room room, User user, LocalDate startDate, LocalDate endDate) {
+        this.room = room;
+        this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -31,12 +43,20 @@ public class Booking {
         this.id = id;
     }
 
-    public Long getRoomId() {
-        return roomId;
+    public Room getRoom() {
+        return room;
     }
 
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDate getStartDate() {
@@ -55,21 +75,20 @@ public class Booking {
         this.endDate = endDate;
     }
 
-    // Custom equals method that compares fields instead of object references
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Booking booking = (Booking) o;
         return Objects.equals(id, booking.id) &&
-                Objects.equals(roomId, booking.roomId) &&
+                Objects.equals(room, booking.room) &&
+                Objects.equals(user, booking.user) &&
                 Objects.equals(startDate, booking.startDate) &&
                 Objects.equals(endDate, booking.endDate);
     }
 
-    // Custom hashCode method that generates a hash based on fields
     @Override
     public int hashCode() {
-        return Objects.hash(id, roomId, startDate, endDate);
+        return Objects.hash(id, room, user, startDate, endDate);
     }
 }

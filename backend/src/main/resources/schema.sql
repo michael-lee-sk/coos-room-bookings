@@ -2,11 +2,11 @@
 DROP TABLE IF EXISTS user_role;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS booking;
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS room;
 
--- Create user table
-CREATE TABLE IF NOT EXISTS user (
+-- Create user table (escaped "user" keyword)
+CREATE TABLE IF NOT EXISTS "user" (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS role (
 CREATE TABLE IF NOT EXISTS user_role (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS booking (
     room_id BIGINT NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
     FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE,
     CONSTRAINT booking_time_valid CHECK (start_time < end_time)
 );
