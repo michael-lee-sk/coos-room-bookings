@@ -1,10 +1,8 @@
--- H2-compatible data.sql
-
--- Truncate all tables to remove existing data (H2-specific truncation)
+-- Clear all existing data (order matters due to foreign key constraints)
 DELETE FROM user_role;
 DELETE FROM booking;
 DELETE FROM role;
-DELETE FROM "user";
+DELETE FROM app_user;
 DELETE FROM room;
 
 -- Insert initial roles
@@ -12,9 +10,9 @@ INSERT INTO role (name) VALUES ('ROLE_USER');
 INSERT INTO role (name) VALUES ('ROLE_ADMIN');
 
 -- Insert initial users
-INSERT INTO "user" (username, password, email, enabled)
+INSERT INTO app_user (username, password, email, enabled)
 VALUES ('admin', 'adminpassword', 'admin@example.com', TRUE);
-INSERT INTO "user" (username, password, email, enabled)
+INSERT INTO app_user (username, password, email, enabled)
 VALUES ('john', 'userpassword', 'john@example.com', TRUE);
 
 -- Assign roles to users

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")  // Maps to the 'user' table in the database
+@Table(name = "app_user")
 public class User {
 
     @Id
@@ -19,10 +19,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 
-    // Constructors
+    // Default Constructor
     public User() {
     }
 
+    // Full Constructor (matches the one in your screenshot)
     public User(String username, String password, String email, boolean enabled) {
         this.username = username;
         this.password = password;

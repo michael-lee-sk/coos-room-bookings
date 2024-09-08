@@ -29,7 +29,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="1331fc1a-50a4-42f9-90c3-2238c5800fd7">
-      <console name="coos room booking" type="STANDARD" schema="springbootdb" session="Main"><![CDATA[SELECT * FROM springbootdb.booking;]]></console>
+      <console name="coos room booking" type="STANDARD" schema="springbootdb" session="Main"><![CDATA[SELECT * FROM booking;]]></console>
     </connection>
     <connection id="43e7b201-8408-4436-a70b-2d82ab395787">
       <console name="Connection" type="STANDARD" schema="" session="Main" />

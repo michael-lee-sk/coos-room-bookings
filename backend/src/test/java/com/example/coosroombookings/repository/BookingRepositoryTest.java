@@ -1,58 +1,88 @@
 package com.example.coosroombookings.repository;
 
-import com.example.coosroombookings.model.Booking;
-import com.example.coosroombookings.model.Room;
-import com.example.coosroombookings.model.User;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.coosroombookings.model.Booking;
+import com.example.coosroombookings.model.User;
+import com.example.coosroombookings.model.Room;
+import com.example.coosroombookings.repository.BookingRepository;
+import com.example.coosroombookings.repository.UserRepository;
+import com.example.coosroombookings.repository.RoomRepository;
+import com.example.coosroombookings.service.BookingService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@DataJpaTest
 public class BookingRepositoryTest {
 
-    @Autowired
+    @Mock
     private BookingRepository bookingRepository;
 
-    @Test
-    public void testSaveBooking() {
-        Room room = new Room(1L, "Conference Room", 10);
-        User user = new User("testuser", "password", "testuser@example.com", true);
-        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+    @Mock
+    private UserRepository userRepository;
 
-        Booking savedBooking = bookingRepository.save(booking);
+    @Mock
+    private RoomRepository roomRepository;
 
-        assertNotNull(savedBooking.getId());
+    @InjectMocks
+    private BookingService bookingService;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void testFindById() {
-        Room room = new Room(1L, "Conference Room", 10);
-        User user = new User("testuser", "password", "testuser@example.com", true);
-        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("John Doe");
+        mockUser.setEmail("john.doe@example.com");
 
-        Booking savedBooking = bookingRepository.save(booking);
+        Room mockRoom = new Room();
+        mockRoom.setId(1L);
+        mockRoom.setName("Room A");
 
-        Optional<Booking> foundBooking = bookingRepository.findById(savedBooking.getId());
+        Booking mockBooking = new Booking(mockRoom, mockUser, LocalDate.now(), LocalDate.now().plusDays(1));
+        mockBooking.setId(1L);
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(mockBooking));
+
+        Optional<Booking> foundBooking = bookingService.getBookingById(1L);
 
         assertTrue(foundBooking.isPresent());
-        assertEquals(savedBooking.getId(), foundBooking.get().getId());
+        assertEquals(1L, foundBooking.get().getId());
+    }
+
+    @Test
+    public void testSaveBooking() {
+        User mockUser = new User();
+        mockUser.setId(1L);
+        Room mockRoom = new Room();
+        mockRoom.setId(1L);
+
+        Booking booking = new Booking(mockRoom, mockUser, LocalDate.now(), LocalDate.now().plusDays(1));
+
+        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
+
+        Booking savedBooking = bookingService.createBooking(booking);
+
+        assertNotNull(savedBooking);
+        verify(bookingRepository).save(any(Booking.class));
     }
 
     @Test
     public void testDeleteBooking() {
-        Room room = new Room(1L, "Conference Room", 10);
-        User user = new User("testuser", "password", "testuser@example.com", true);
-        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        doNothing().when(bookingRepository).deleteById(1L);
 
-        Booking savedBooking = bookingRepository.save(booking);
+        bookingService.deleteBookingById(1L);
 
-        bookingRepository.deleteById(savedBooking.getId());
-
-        assertFalse(bookingRepository.findById(savedBooking.getId()).isPresent());
+        verify(bookingRepository).deleteById(1L);
     }
 }

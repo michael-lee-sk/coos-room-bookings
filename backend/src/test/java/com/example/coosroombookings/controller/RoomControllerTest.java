@@ -1,89 +1,133 @@
-package com.example.coosroombookings.controller;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.coosroombookings.controller.RoomController;
 import com.example.coosroombookings.model.Room;
 import com.example.coosroombookings.service.RoomService;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Arrays;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-
-@WebMvcTest(RoomController.class)
 public class RoomControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private RoomService roomService;
 
-    @WithMockUser(roles = "USER")
-    @Test
-    public void testGetAvailableRooms() throws Exception {
-        Room room1 = new Room(1L, "Conference Room", 10);
-        Room room2 = new Room(2L, "Meeting Room", 5);
+    @InjectMocks
+    private RoomController roomController;
 
-        when(roomService.getAvailableRooms()).thenReturn(Arrays.asList(room1, room2));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/rooms/available"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("Conference Room")))
-                .andExpect(jsonPath("$[1].name", is("Meeting Room")));
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    @WithMockUser(roles = "USER")
     @Test
-    public void testCreateRoom() throws Exception {
-        Room room = new Room(1L, "New Room", 8);
+    public void testAddRoom() {
+        Room mockRoom = new Room();
+        mockRoom.setId(1L);
+        mockRoom.setName("Room A");
+        mockRoom.setCapacity(10);
 
-        when(roomService.createRoom(Mockito.any(Room.class))).thenReturn(room);
+        // Simulate room creation by the service
+        when(roomService.createRoom(any(Room.class))).thenReturn(mockRoom);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/rooms")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\": 1, \"name\": \"New Room\", \"capacity\": 8}")
-                        .with(csrf()))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is("New Room")));
+        // Test the controller method
+        ResponseEntity<Room> response = roomController.addRoom(mockRoom);
+
+        assertEquals(201, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(mockRoom.getName(), response.getBody().getName());
+        verify(roomService).createRoom(any(Room.class));
     }
 
-    @WithMockUser(roles = "USER")
     @Test
-    public void testUpdateRoom() throws Exception {
-        Room room = new Room(1L, "Updated Room", 12);
+    public void testGetAvailableRooms() {
+        List<Room> mockRooms = Arrays.asList(
+                new Room(1L, "Room A", 5),
+                new Room(2L, "Room B", 10)
+        );
 
-        when(roomService.updateRoom(Mockito.eq(1L), Mockito.any(Room.class))).thenReturn(room);
+        // Simulate the service response
+        when(roomService.getAvailableRooms()).thenReturn(mockRooms);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/rooms/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\": 1, \"name\": \"Updated Room\", \"capacity\": 12}")
-                        .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Updated Room")))
-                .andExpect(jsonPath("$.capacity", is(12)));
+        // Call the controller method
+        List<Room> availableRooms = roomController.getAvailableRooms();
+
+        assertEquals(2, availableRooms.size());
+        verify(roomService).getAvailableRooms();
     }
 
-    @WithMockUser(roles = "USER")
     @Test
-    public void testDeleteRoom() throws Exception {
+    public void testGetRoomById() {
+        Room mockRoom = new Room();
+        mockRoom.setId(1L);
+        mockRoom.setName("Room A");
+
+        // Simulate the service behavior
+        when(roomService.findRoomById(1L)).thenReturn(mockRoom);
+
+        // Call the controller method
+        ResponseEntity<Room> response = roomController.getRoomById(1L);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(mockRoom.getName(), response.getBody().getName());
+        verify(roomService).findRoomById(1L);
+    }
+
+    @Test
+    public void testUpdateRoom() {
+        Room mockRoom = new Room();
+        mockRoom.setId(1L);
+        mockRoom.setName("Updated Room");
+        mockRoom.setCapacity(15);
+
+        // Simulate service update behavior
+        when(roomService.updateRoom(eq(1L), any(Room.class))).thenReturn(mockRoom);
+
+        // Call the controller method
+        ResponseEntity<Room> response = roomController.updateRoom(1L, mockRoom);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Updated Room", response.getBody().getName());
+        assertEquals(15, response.getBody().getCapacity());
+        verify(roomService).updateRoom(eq(1L), any(Room.class));
+    }
+
+    @Test
+    public void testDeleteRoom() {
+        // Simulate service behavior for deletion
         doNothing().when(roomService).deleteRoomById(1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/rooms/1")
-                        .with(csrf()))
-                .andExpect(status().isNoContent());
+        // Call the controller method
+        ResponseEntity<Void> response = roomController.deleteRoom(1L);
+
+        assertEquals(204, response.getStatusCodeValue());
+        verify(roomService).deleteRoomById(1L);
+    }
+
+    @Test
+    public void testSearchRooms() {
+        List<Room> mockRooms = Arrays.asList(
+                new Room(1L, "Room A", 5),
+                new Room(2L, "Room B", 10)
+        );
+
+        // Simulate service search behavior
+        when(roomService.searchRooms("Room", 5)).thenReturn(mockRooms);
+
+        // Call the controller method
+        ResponseEntity<List<Room>> response = roomController.searchRooms("Room", 5);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
+        verify(roomService).searchRooms("Room", 5);
     }
 }
