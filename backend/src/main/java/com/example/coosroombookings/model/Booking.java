@@ -56,6 +56,12 @@ public class Booking {
     }
 
     public Booking(Room room, User user, LocalDate startDate, LocalDate endDate) {
+        if (room == null) {
+            throw new NullPointerException("Room cannot be null");
+        }
+        if (user == null) {
+            throw new NullPointerException("User cannot be null");
+        }
         this.room = room;
         this.user = user;
         this.startDate = startDate;
