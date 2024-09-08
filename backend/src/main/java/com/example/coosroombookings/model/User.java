@@ -86,4 +86,16 @@ public class User {
     public void setBookings(Set<Booking> bookings) {
         this.bookings = bookings;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", enabled=" + enabled +
+                ", bookings=" + bookings +
+                '}';
+    }
 }

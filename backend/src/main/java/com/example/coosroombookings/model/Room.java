@@ -23,6 +23,19 @@ public class Room {
     @NotNull(message = "Room name cannot be null")
     private String name;
 
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", capacity=" + capacity +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdDate=" + createdDate +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", updatedDate=" + updatedDate +
+                '}';
+    }
+
     @NotNull(message = "Room capacity cannot be null")
     private int capacity;
 

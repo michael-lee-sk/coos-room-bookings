@@ -1,6 +1,4 @@
 package com.example.coosroombookings.service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.example.coosroombookings.model.Room;
 import com.example.coosroombookings.repository.RoomRepository;

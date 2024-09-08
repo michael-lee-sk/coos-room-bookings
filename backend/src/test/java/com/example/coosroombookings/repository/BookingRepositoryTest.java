@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.model.User;
 import com.example.coosroombookings.model.Room;
-import com.example.coosroombookings.repository.BookingRepository;
-import com.example.coosroombookings.repository.UserRepository;
-import com.example.coosroombookings.repository.RoomRepository;
 import com.example.coosroombookings.service.BookingService;
 
 import org.junit.jupiter.api.BeforeEach;

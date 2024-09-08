@@ -21,4 +21,14 @@ public class BookingRequest {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    @Override
+    public String toString() {
+        return "BookingRequest{" +
+                "room=" + room +
+                ", users=" + users +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }
