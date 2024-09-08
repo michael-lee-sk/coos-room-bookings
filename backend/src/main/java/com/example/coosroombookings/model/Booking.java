@@ -1,29 +1,55 @@
+
 package com.example.coosroombookings.model;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "booking")
+@EntityListeners(AuditingEntityListener.class)
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Room cannot be null")
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
+    @NotNull(message = "User cannot be null")
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @NotNull(message = "Start date cannot be null")
     private LocalDate startDate;
+
+    @NotNull(message = "End date cannot be null")
     private LocalDate endDate;
 
-    // Constructors
+    @CreatedBy
+    private String createdBy;
+
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @LastModifiedBy
+    private String updatedBy;
+
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
+
     public Booking() {
     }
 
@@ -35,6 +61,7 @@ public class Booking {
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
