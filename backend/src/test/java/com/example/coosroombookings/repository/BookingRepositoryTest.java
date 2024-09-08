@@ -1,6 +1,8 @@
 package com.example.coosroombookings.repository;
 
 import com.example.coosroombookings.model.Booking;
+import com.example.coosroombookings.model.Room;
+import com.example.coosroombookings.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,7 +20,9 @@ public class BookingRepositoryTest {
 
     @Test
     public void testSaveBooking() {
-        Booking booking = new Booking(null, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Room room = new Room(1L, "Conference Room", 10);
+        User user = new User("testuser", "password", "testuser@example.com", true);
+        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
 
         Booking savedBooking = bookingRepository.save(booking);
 
@@ -27,7 +31,10 @@ public class BookingRepositoryTest {
 
     @Test
     public void testFindById() {
-        Booking booking = new Booking(null, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Room room = new Room(1L, "Conference Room", 10);
+        User user = new User("testuser", "password", "testuser@example.com", true);
+        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+
         Booking savedBooking = bookingRepository.save(booking);
 
         Optional<Booking> foundBooking = bookingRepository.findById(savedBooking.getId());
@@ -38,7 +45,10 @@ public class BookingRepositoryTest {
 
     @Test
     public void testDeleteBooking() {
-        Booking booking = new Booking(null, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Room room = new Room(1L, "Conference Room", 10);
+        User user = new User("testuser", "password", "testuser@example.com", true);
+        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+
         Booking savedBooking = bookingRepository.save(booking);
 
         bookingRepository.deleteById(savedBooking.getId());

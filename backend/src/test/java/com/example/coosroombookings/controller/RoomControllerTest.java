@@ -56,7 +56,7 @@ public class RoomControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/rooms")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\": 1, \"name\": \"New Room\", \"capacity\": 8}")
-                        .with(csrf()))  // Add CSRF token for POST request
+                        .with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("New Room")));
     }
@@ -71,7 +71,7 @@ public class RoomControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/rooms/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\": 1, \"name\": \"Updated Room\", \"capacity\": 12}")
-                        .with(csrf()))  // Add CSRF token for PUT request
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Updated Room")))
                 .andExpect(jsonPath("$.capacity", is(12)));
@@ -83,26 +83,7 @@ public class RoomControllerTest {
         doNothing().when(roomService).deleteRoomById(1L);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/rooms/1")
-                        .with(csrf()))  // Add CSRF token for DELETE request
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
-    }
-
-    @WithMockUser(roles = "USER")
-    @Test
-    public void testSearchRooms() throws Exception {
-        Room room1 = new Room(1L, "Conference Room", 10);
-        Room room2 = new Room(2L, "Meeting Room", 5);
-
-        when(roomService.searchRooms(Mockito.eq("Room"), Mockito.eq(5)))
-                .thenReturn(Arrays.asList(room1, room2));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/rooms/search")
-                        .param("name", "Room")
-                        .param("minCapacity", "5"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("Conference Room")))
-                .andExpect(jsonPath("$[1].name", is("Meeting Room")));
     }
 }

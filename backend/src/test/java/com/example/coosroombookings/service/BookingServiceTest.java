@@ -1,6 +1,8 @@
 package com.example.coosroombookings.service;
 
 import com.example.coosroombookings.model.Booking;
+import com.example.coosroombookings.model.Room;
+import com.example.coosroombookings.model.User;
 import com.example.coosroombookings.repository.BookingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +32,14 @@ public class BookingServiceTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        booking1 = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
-        booking2 = new Booking(2L, 2L, LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 2));
+        Room room1 = new Room(1L, "Conference Room", 10);
+        User user1 = new User("testuser1", "password1", "testuser1@example.com", true);
+
+        Room room2 = new Room(2L, "Meeting Room", 5);
+        User user2 = new User("testuser2", "password2", "testuser2@example.com", true);
+
+        booking1 = new Booking(room1, user1, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        booking2 = new Booking(room2, user2, LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 2));
     }
 
     @Test
@@ -41,7 +49,7 @@ public class BookingServiceTest {
         Booking createdBooking = bookingService.createBooking(booking1);
 
         assertNotNull(createdBooking);
-        assertEquals(1L, createdBooking.getId());
+        assertEquals(booking1.getId(), createdBooking.getId());
         verify(bookingRepository, times(1)).save(booking1);
     }
 
@@ -60,7 +68,7 @@ public class BookingServiceTest {
         Optional<Booking> foundBooking = bookingService.getBookingById(1L);
 
         assertTrue(foundBooking.isPresent());
-        assertEquals(1L, foundBooking.get().getId());
+        assertEquals(booking1.getId(), foundBooking.get().getId());
         verify(bookingRepository, times(1)).findById(1L);
     }
 

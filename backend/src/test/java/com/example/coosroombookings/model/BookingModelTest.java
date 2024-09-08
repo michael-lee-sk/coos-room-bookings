@@ -10,21 +10,26 @@ public class BookingModelTest {
 
     @Test
     public void testBookingCreation() {
-        Booking booking = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Room room = new Room(1L, "Conference Room", 10);
+        User user = new User("testuser", "password", "testuser@example.com", true);
+        Booking booking = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
 
         assertNotNull(booking);
-        assertEquals(1L, booking.getId());
-        assertEquals(1L, booking.getRoomId());
+        assertEquals(room, booking.getRoom());
+        assertEquals(user, booking.getUser());
         assertEquals(LocalDate.of(2024, 9, 1), booking.getStartDate());
         assertEquals(LocalDate.of(2024, 9, 2), booking.getEndDate());
     }
 
     @Test
     public void testBookingEqualsAndHashCode() {
-        Booking booking1 = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
-        Booking booking2 = new Booking(1L, 1L, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Room room = new Room(1L, "Conference Room", 10);
+        User user = new User("testuser", "password", "testuser@example.com", true);
 
-        assertEquals(booking1, booking2);  // Should now pass with custom equals method
-        assertEquals(booking1.hashCode(), booking2.hashCode());  // Should now pass with custom hashCode method
+        Booking booking1 = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+        Booking booking2 = new Booking(room, user, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
+
+        assertEquals(booking1, booking2);
+        assertEquals(booking1.hashCode(), booking2.hashCode());
     }
 }
