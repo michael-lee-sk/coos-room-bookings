@@ -65,3 +65,4 @@ logs/
 
 # macOS
 *.DS_Store
+*.zip
