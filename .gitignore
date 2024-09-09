@@ -69,3 +69,4 @@ logs/
 # Ignore all .zip files
 *.zip
 frontend/frontend.zip
+*.zip
