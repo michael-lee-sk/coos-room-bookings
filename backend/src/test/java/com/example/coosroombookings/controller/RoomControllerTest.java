@@ -1,3 +1,4 @@
+package com.example.coosroombookings.controller;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,13 +69,15 @@ public class RoomControllerTest {
         LocalDateTime startDate = LocalDateTime.of(2023, 9, 10, 14, 0);
         LocalDateTime endDate = LocalDateTime.of(2023, 9, 12, 12, 0);
 
-        // Simulate the service response with params
+        // Simulate the service response
         when(roomService.getAvailableRooms(startDate, endDate)).thenReturn(mockRooms);
 
         // Call the controller method
-        List<Room> availableRooms = roomController.getAvailableRooms(startDate, endDate);
+        ResponseEntity<List<Room>> response = roomController.getAvailableRooms(startDate, endDate);
 
-        assertEquals(2, availableRooms.size());
+        // Assert that the status code is OK (200) and the response body contains the mock rooms
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
         verify(roomService).getAvailableRooms(startDate, endDate);
     }
 
@@ -83,13 +86,15 @@ public class RoomControllerTest {
         LocalDateTime startDate = LocalDateTime.of(2023, 9, 10, 14, 0);
         LocalDateTime endDate = LocalDateTime.of(2023, 9, 12, 12, 0);
 
-        // Simulate an empty result
+        // Simulate an empty result from the service
         when(roomService.getAvailableRooms(startDate, endDate)).thenReturn(Arrays.asList());
 
         // Call the controller method
-        List<Room> availableRooms = roomController.getAvailableRooms(startDate, endDate);
+        ResponseEntity<List<Room>> response = roomController.getAvailableRooms(startDate, endDate);
 
-        assertEquals(0, availableRooms.size());
+        // Assert that the status code is OK (200) and the response body is empty
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0, response.getBody().size());
         verify(roomService).getAvailableRooms(startDate, endDate);
     }
 

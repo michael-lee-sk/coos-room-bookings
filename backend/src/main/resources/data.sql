@@ -31,8 +31,6 @@ INSERT INTO room (name, capacity) VALUES ('Room 108', 10);
 INSERT INTO room (name, capacity) VALUES ('Room 109', 14);
 INSERT INTO room (name, capacity) VALUES ('Room 110', 18);
 
--- Insert sample bookings with valid dates
-INSERT INTO booking (user_id, room_id, start_date, end_date)
-VALUES (2, 1, '2024-09-10', '2024-09-10');
-INSERT INTO booking (user_id, room_id, start_date, end_date)
-VALUES (2, 2, '2024-09-11', '2024-09-11');
+INSERT INTO Booking (room_id, user_id, startTime, endTime) VALUES (1, 1, '2024-09-10 09:00:00', '2024-09-10 12:00:00');
+INSERT INTO Booking (room_id, user_id, startTime, endTime) VALUES (2, 2, '2024-09-11 13:00:00', '2024-09-11 16:00:00');
+

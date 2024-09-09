@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -38,8 +38,8 @@ public class BookingServiceTest {
         Room room2 = new Room(2L, "Meeting Room", 5);
         User user2 = new User("testuser2", "password2", "testuser2@example.com", true);
 
-        booking1 = new Booking(room1, user1, LocalDate.of(2024, 9, 1), LocalDate.of(2024, 9, 2));
-        booking2 = new Booking(room2, user2, LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 2));
+        booking1 = new Booking(room1, user1, LocalDateTime.of(2024, 9, 1, 10, 0), LocalDateTime.of(2024, 9, 1, 12, 0));
+        booking2 = new Booking(room2, user2, LocalDateTime.of(2024, 10, 1, 10, 0), LocalDateTime.of(2024, 10, 1, 12, 0));
     }
 
     @Test

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class BookingRepositoryTest {
@@ -46,7 +46,7 @@ public class BookingRepositoryTest {
         mockRoom.setId(1L);
         mockRoom.setName("Room A");
 
-        Booking mockBooking = new Booking(mockRoom, mockUser, LocalDate.now(), LocalDate.now().plusDays(1));
+        Booking mockBooking = new Booking(mockRoom, mockUser, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         mockBooking.setId(1L);
 
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(mockBooking));
@@ -64,7 +64,7 @@ public class BookingRepositoryTest {
         Room mockRoom = new Room();
         mockRoom.setId(1L);
 
-        Booking booking = new Booking(mockRoom, mockUser, LocalDate.now(), LocalDate.now().plusDays(1));
+        Booking booking = new Booking(mockRoom, mockUser, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
 

@@ -5,6 +5,7 @@ import com.example.coosroombookings.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,19 +33,25 @@ public class RoomController {
         return ResponseEntity.status(201).body(savedRoom);
     }
 
-    // Updated endpoint for available rooms
+
     @GetMapping("/available")
-    public List<Room> getAvailableRooms(
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate
-    ) {
-        // If no start and end dates are provided, check current availability
-        if (startDate == null || endDate == null) {
-            startDate = LocalDateTime.now();
-            endDate = startDate.with(LocalTime.MAX); // Default to the end of the current day
+    public ResponseEntity<List<Room>> getAvailableRooms(
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+
+        if (startTime == null || endTime == null) {
+            startTime = LocalDateTime.now();
+            endTime = startTime.withHour(23).withMinute(59).withSecond(59);  // End of the day
         }
-        return roomService.getAvailableRooms(startDate, endDate);
+
+        // Fetch available rooms using RoomService
+
+        List<Room> availableRooms = roomService.getAvailableRooms(startTime, endTime);
+
+        // Return the list wrapped in a ResponseEntity with an HTTP status of OK
+        return ResponseEntity.ok(availableRooms);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {

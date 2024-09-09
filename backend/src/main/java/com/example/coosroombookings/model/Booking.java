@@ -11,7 +11,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import java.awt.print.Book;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -34,11 +33,8 @@ public class Booking {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @NotNull(message = "Start date cannot be null")
-    private LocalDate startDate;
-
-    @NotNull(message = "End date cannot be null")
-    private LocalDate endDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     @CreatedBy
     private String createdBy;
@@ -55,7 +51,7 @@ public class Booking {
     public Booking() {
     }
 
-    public Booking(Room room, User user, LocalDate startDate, LocalDate endDate) {
+    public Booking(Room room, User user, LocalDateTime  startTime, LocalDateTime  endTime) {
         if (room == null) {
             throw new NullPointerException("Room cannot be null");
         }
@@ -64,8 +60,8 @@ public class Booking {
         }
         this.room = room;
         this.user = user;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     // Getters and Setters
@@ -94,20 +90,21 @@ public class Booking {
         this.user = user;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    // Getters and Setters
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -118,13 +115,13 @@ public class Booking {
         return Objects.equals(id, booking.id) &&
                 Objects.equals(room, booking.room) &&
                 Objects.equals(user, booking.user) &&
-                Objects.equals(startDate, booking.startDate) &&
-                Objects.equals(endDate, booking.endDate);
+                Objects.equals(startTime, booking.startTime) &&
+                Objects.equals(endTime, booking.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, room, user, startDate, endDate);
+        return Objects.hash(id, room, user, startTime, endTime);
     }
 
 
@@ -135,8 +132,8 @@ public class Booking {
                 "id=" + id +
                 ", room=" + room +
                 ", user=" + user +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
+                ", startDate=" + startTime +
+                ", endDate=" + endTime +
                 '}';
     }
 }

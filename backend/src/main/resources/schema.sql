@@ -37,13 +37,13 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 -- Create booking table with updated constraint
-CREATE TABLE IF NOT EXISTS booking (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+CREATE TABLE Booking (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     room_id BIGINT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE,
-    CONSTRAINT booking_time_valid CHECK (start_date <= end_date)  -- Allow same start and end date
+    user_id BIGINT NOT NULL,
+    startTime DATETIME NOT NULL,
+    endTime DATETIME NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES Room(id),
+    FOREIGN KEY (user_id) REFERENCES User(id)
 );
+
