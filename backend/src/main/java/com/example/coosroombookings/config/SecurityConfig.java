@@ -1,36 +1,43 @@
 package com.example.coosroombookings.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+@Configuration
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()  // Disable CSRF for testing purposes (enable this in production)
+                .cors().and()  // Enable CORS
+                .csrf().disable()  // Disable CSRF for now
                 .authorizeRequests()
-                .antMatchers("/", "/login", "/oauth2/**", "/error", "/home").permitAll()  // Allow public access to these routes
-                .anyRequest().authenticated()  // Protect other endpoints
+                .antMatchers("/", "/oauth2/**", "/error").permitAll()  // Public access
+                .anyRequest().authenticated()  // All other routes require authentication
                 .and()
                 .oauth2Login()
-                .loginPage("/login")  // Redirect to this page for login
-                .defaultSuccessUrl("/home", true)  // After successful login, redirect to /home
+                .defaultSuccessUrl("/home", true)  // Redirect to /home after successful login
                 .and()
                 .logout()
-                .logoutSuccessUrl("/login?logout")  // Redirect to login page after logout
-                .and()
-                .headers().frameOptions().disable();  // Disable frame options if needed for H2 console
+                .logoutSuccessUrl("/")  // Redirect to root after logout
+                .permitAll();
 
         return http.build();
     }
 
-    // Optional: Redirect to a specific URL after successful login
     @Bean
-    public AuthenticationSuccessHandler successHandler() {
-        return new SimpleUrlAuthenticationSuccessHandler("/home");
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");  // Allow requests from frontend
+        configuration.addAllowedMethod("*");  // Allow all HTTP methods
+        configuration.addAllowedHeader("*");  // Allow all headers
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

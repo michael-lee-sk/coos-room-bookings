@@ -1,43 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Home = () => {
-  const [rooms, setRooms] = useState([]);
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      const token = localStorage.getItem('token');
-
-      try {
-        const response = await fetch('http://localhost:8080/rooms', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setRooms(data);
-        } else {
-          setError('Failed to fetch rooms');
-        }
-      } catch (error) {
-        setError('Failed to connect to server');
-      }
-    };
-
-    fetchRooms();
+    // Fetch message from backend
+    fetch('http://localhost:8080/home')
+      .then(response => response.text())
+      .then(data => setMessage(data))
+      .catch(error => console.error('Error fetching home message:', error));
   }, []);
 
   return (
     <div>
-      <h2>Available Rooms</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
-        {rooms.map((room) => (
-          <li key={room.id}>{room.name} - {room.capacity} people</li>
-        ))}
-      </ul>
+      <h1>{message}</h1>
     </div>
   );
 };
