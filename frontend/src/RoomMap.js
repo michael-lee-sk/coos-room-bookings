@@ -1,56 +1,76 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const RoomMap = () => {
     const [rooms, setRooms] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
 
-    useEffect(() => {
-      const fetchRooms = async () => {
-        try {
-          const startTime = new Date().toISOString();
-          const endTime = new Date(new Date().getTime() + 60 * 60 * 1000).toISOString();
-      
-          console.log(`Requesting available rooms from ${startTime} to ${endTime}`);
-      
-          // Correct the request method and send parameters in the URL as query parameters
-          const response = await fetch(
-            `http://localhost:8080/api/rooms/available?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`,
-            {
-              method: "GET", // Use GET instead of POST
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
-          );
-      
-          if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-          }
-      
-          const data = await response.json(); // Parse the JSON response
-          console.log("Received data:", data);
-      
-          setRooms(data); // Save the room data
-          setLoading(false); // Stop loading
-        } catch (error) {
-          console.error("Error fetching room availability:", error);
-          setError(error.message || 'Unknown error occurred');
-          setLoading(false);
+    const fetchRooms = async () => {
+        if (!startTime || !endTime) {
+            return;
         }
-      };
-      
+        try {
+            setLoading(true);
+            console.log(`Requesting available rooms from ${startTime} to ${endTime}`);
 
-    fetchRooms();
-    }, []);
+            const response = await fetch(
+                `http://localhost:8080/api/rooms/available?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log("Received data:", data);
+
+            setRooms(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching room availability:", error);
+            setError(error.message || 'Unknown error occurred');
+            setLoading(false);
+        }
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchRooms();
+    };
 
     return (
         <div>
             <h1>Available Rooms</h1>
+            <form onSubmit={handleSearch}>
+                <label>
+                    Start Time:
+                    <input
+                        type="datetime-local"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                    />
+                </label>
+                <label>
+                    End Time:
+                    <input
+                        type="datetime-local"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                    />
+                </label>
+                <button type="submit">Search</button>
+            </form>
+            {loading && <div>Loading...</div>}
+            {error && <div>Error: {error}</div>}
             <ul>
                 {rooms.map(room => (
                     <li key={room.id}>{room.name} - {room.capacity}</li>
