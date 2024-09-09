@@ -54,8 +54,6 @@ public class RoomController {
         return ResponseEntity.ok(availableRooms);
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
         Optional<Room> room = Optional.ofNullable(roomService.findRoomById(id));
