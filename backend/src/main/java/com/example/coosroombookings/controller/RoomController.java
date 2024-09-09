@@ -9,11 +9,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -33,24 +36,24 @@ public class RoomController {
         return ResponseEntity.status(201).body(savedRoom);
     }
 
-
     @GetMapping("/available")
     public ResponseEntity<List<Room>> getAvailableRooms(
             @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
+        logger.info("Received request for available rooms from {} to {}", startTime, endTime);
+
         if (startTime == null || endTime == null) {
             startTime = LocalDateTime.now();
-            endTime = startTime.withHour(23).withMinute(59).withSecond(59);  // End of the day
+            endTime = startTime.plusHours(1);
         }
 
-        // Fetch available rooms using RoomService
-
         List<Room> availableRooms = roomService.getAvailableRooms(startTime, endTime);
+        logger.info("Found {} available rooms", availableRooms.size());
 
-        // Return the list wrapped in a ResponseEntity with an HTTP status of OK
         return ResponseEntity.ok(availableRooms);
     }
+
 
 
     @GetMapping("/{id}")

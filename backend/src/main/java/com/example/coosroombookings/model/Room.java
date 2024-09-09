@@ -66,6 +66,8 @@ public class Room {
         this.capacity = capacity;
     }
 
+
+
     // Getters and Setters
     public Long getId() {
         return id;

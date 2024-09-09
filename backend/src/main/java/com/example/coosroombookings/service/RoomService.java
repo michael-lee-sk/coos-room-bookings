@@ -4,6 +4,9 @@ import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.model.Room;
 import com.example.coosroombookings.repository.BookingRepository;
 import com.example.coosroombookings.repository.RoomRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +23,24 @@ public class RoomService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
+
     // Create a room
     public Room createRoom(Room room) {
         return roomRepository.save(room);
     }
 
     // Get available rooms based on a date range
-    public List<Room> getAvailableRooms(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Room> allRooms = roomRepository.findAll();
+    public List<Room> getAvailableRooms(LocalDateTime startTime, LocalDateTime endTime) {
+        // Log the times being used for the query
+        logger.info("Fetching available rooms from {} to {}", startTime, endTime);
 
-        // Filter rooms based on availability for the given date range
-        return allRooms.stream().filter(room -> {
-            List<Booking> conflictingBookings = bookingRepository.findOverlappingBookings(
-                    room.getId(), startDate, endDate
-            );
-            return conflictingBookings.isEmpty();  // Room is available if no conflicting bookings exist
-        }).collect(Collectors.toList());
+        List<Room> availableRooms = roomRepository.findAvailableRooms(startTime, endTime);
+
+        // Log the rooms retrieved
+        logger.info("Found {} rooms available", availableRooms.size());
+
+        return availableRooms;
     }
 
 

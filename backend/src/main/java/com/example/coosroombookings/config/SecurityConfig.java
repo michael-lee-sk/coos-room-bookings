@@ -19,7 +19,8 @@ public class SecurityConfig {
                 .cors().and()  // Enable CORS
                 .csrf().disable()  // Disable CSRF for now
                 .authorizeRequests()
-                .antMatchers("/", "/oauth2/**", "/error", "/api/rooms/available").permitAll()  // Allow public access to specific endpoints
+                .antMatchers("/", "/oauth2/**", "/error", "/api/rooms/**").permitAll()  // Allow public access to basic routes
+                .antMatchers("/api/rooms/available").authenticated()  // Protect API route, only for logged-in users
                 .anyRequest().authenticated()  // Protect all other routes
                 .and()
                 .oauth2Login()
@@ -36,7 +37,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000"));  // Allow requests from frontend
-        configuration.addAllowedOrigin("http://localhost:3000");  // Allow requests from frontend
         configuration.addAllowedMethod("*");  // Allow all HTTP methods
         configuration.addAllowedHeader("*");  // Allow all headers
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

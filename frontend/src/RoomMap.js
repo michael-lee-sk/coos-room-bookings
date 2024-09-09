@@ -6,55 +6,52 @@ const RoomMap = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchRooms = async () => {
-            try {
-                const startDate = new Date().toISOString();  // Current date-time
-                const endDate = new Date().toISOString();    // Can set future date-time if needed
+      const fetchRooms = async () => {
+        try {
+            const startTime = new Date().toISOString();
+            const endTime = new Date(new Date().getTime() + 60 * 60 * 1000).toISOString();
+            
+            console.log(`Requesting available rooms from ${startTime} to ${endTime}`);
 
-                const response = await fetch(`/api/rooms/available?startTime=${startDate}&endTime=${endDate}`)
-                ;
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch room availability');
-                }
+            const response = await fetch("http://localhost:8080/api/rooms/available", {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ startTime, endTime })
+          });
 
-                const data = await response.json();
-                setRooms(data);  // Store the rooms data
-            } catch (error) {
-                console.error("Error fetching room availability:", error);
-                setError(error.message);
-            } finally {
-                setLoading(false);  // Finish loading
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
             }
-        };
 
-        fetchRooms();  // Call the function when the component loads
+            const data = await response.json();  // Parse the JSON response
+            console.log("Received data:", data);
+
+            setRooms(data);  // Save the room data
+            setLoading(false);  // Stop loading
+        } catch (error) {
+            console.error("Error fetching room availability:", error);
+            setError(error.message || 'Unknown error occurred');
+            setLoading(false);
+        }
+    };
+
+    fetchRooms();
     }, []);
 
-    if (loading) {
-        return <div>Loading room availability...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
-    if (rooms.length === 0) {
-        return <div>No rooms available</div>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div>
-            <h1>Church Level 2 Map</h1>
-            <div className="room-map">
-                {rooms.map((room) => (
-                    <div key={room.id} className="room">
-                        <h2>Room: {room.name}</h2>
-                        <p>Capacity: {room.capacity}</p>
-                        <p>Status: {room.isAvailable ? "Available" : "Unavailable"}</p>
-                    </div>
+            <h1>Available Rooms</h1>
+            <ul>
+                {rooms.map(room => (
+                    <li key={room.id}>{room.name} - {room.capacity}</li>
                 ))}
-            </div>
+            </ul>
         </div>
     );
 };
