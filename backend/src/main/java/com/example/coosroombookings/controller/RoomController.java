@@ -54,6 +54,22 @@ public class RoomController {
         return ResponseEntity.ok(availableRooms);
     }
 
+    @GetMapping("/next-available")
+    public ResponseEntity<Room> findNextAvailableRoom(
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+
+        logger.info("Received request for next available room from {} to {}", startTime, endTime);
+
+        Room nextAvailableRoom = roomService.findNextAvailableRoom(startTime, endTime);
+
+        if (nextAvailableRoom == null) {
+            return ResponseEntity.noContent().build(); // No room found
+        }
+
+        return ResponseEntity.ok(nextAvailableRoom);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
         Optional<Room> room = Optional.ofNullable(roomService.findRoomById(id));

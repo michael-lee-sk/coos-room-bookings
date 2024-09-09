@@ -6,6 +6,7 @@ const RoomMap = () => {
     const [error, setError] = useState(null);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [nextAvailableRoom, setNextAvailableRoom] = useState(null);
 
     const fetchRooms = async () => {
         if (!startTime || !endTime) {
@@ -33,12 +34,53 @@ const RoomMap = () => {
             const data = await response.json();
             console.log("Received data:", data);
 
-            setRooms(data);
+            if (data.length === 0) {
+                // No rooms available, find the next available room
+                await findNextAvailableRoom();
+            } else {
+                setRooms(data);
+                setNextAvailableRoom(null); // Reset next available room
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error fetching room availability:", error);
             setError(error.message || 'Unknown error occurred');
             setLoading(false);
+        }
+    };
+
+    const findNextAvailableRoom = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/rooms/next-available?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            if (response.status === 204) {
+                setNextAvailableRoom(null); // No room found
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log("Next available room data:", data);
+            if (data) {
+                setNextAvailableRoom(data);
+            } else {
+                setNextAvailableRoom(null); // No room found
+            }
+        } catch (error) {
+            console.error("Error fetching next available room:", error);
+            setNextAvailableRoom(null);
         }
     };
 
@@ -71,6 +113,8 @@ const RoomMap = () => {
             </form>
             {loading && <div>Loading...</div>}
             {error && <div>Error: {error}</div>}
+            {rooms.length === 0 && !loading && !error && <div>No rooms available for the selected time.</div>}
+            {nextAvailableRoom && <div>Next available room: {nextAvailableRoom.name} - {nextAvailableRoom.capacity}</div>}
             <ul>
                 {rooms.map(room => (
                     <li key={room.id}>{room.name} - {room.capacity}</li>

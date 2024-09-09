@@ -14,4 +14,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b WHERE b.room.id = :roomId AND b.startTime < :endDate AND b.endTime > :startDate")
     List<Booking> findOverlappingBookings(@Param("roomId") Long roomId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
+    // Optional: Query to find all bookings for a specific room
+    List<Booking> findByRoomId(Long roomId);
 }

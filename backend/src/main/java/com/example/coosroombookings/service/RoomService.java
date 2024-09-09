@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +44,28 @@ public class RoomService {
         return availableRooms;
     }
 
+    public Room findNextAvailableRoom(LocalDateTime startTime, LocalDateTime endTime) {
+        List<Room> allRooms = roomRepository.findAll();
+
+        // Check each room for availability
+        for (Room room : allRooms) {
+            List<Booking> bookings = bookingRepository.findByRoomId(room.getId());
+            boolean isAvailable = true;
+
+            for (Booking booking : bookings) {
+                if (booking.getEndTime().isAfter(startTime) && booking.getStartTime().isBefore(endTime)) {
+                    isAvailable = false;
+                    break;
+                }
+            }
+
+            if (isAvailable) {
+                return room; // Return the first available room
+            }
+        }
+
+        return null; // No available room found
+    }
 
     // Get a room by ID
     public Room findRoomById(Long id) {
