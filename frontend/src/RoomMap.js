@@ -14,13 +14,14 @@ const RoomMap = () => {
             console.log(`Requesting available rooms from ${startTime} to ${endTime}`);
 
             const response = await fetch("http://localhost:8080/api/rooms/available", {
-              method: "POST",
+              method: "POST",  // Use POST instead of GET
               credentials: "include",
               headers: {
                   "Content-Type": "application/json"
               },
-              body: JSON.stringify({ startTime, endTime })
+              body: JSON.stringify({ startTime, endTime })  // Send startTime and endTime in the body
           });
+          
 
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
