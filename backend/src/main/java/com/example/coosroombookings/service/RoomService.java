@@ -1,6 +1,8 @@
 package com.example.coosroombookings.service;
 
+import com.example.coosroombookings.model.Booking;
 import com.example.coosroombookings.model.Room;
+import com.example.coosroombookings.repository.BookingRepository;
 import com.example.coosroombookings.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private BookingRepository bookingRepository;
+
     // Create a room
     public Room createRoom(Room room) {
         return roomRepository.save(room);
@@ -24,11 +29,15 @@ public class RoomService {
     public List<Room> getAvailableRooms(LocalDateTime startDate, LocalDateTime endDate) {
         List<Room> allRooms = roomRepository.findAll();
 
-        // Filter rooms based on availability during the specified date range
-        return allRooms.stream()
-                .filter(room -> room.isAvailableDuring(startDate, endDate))
-                .collect(Collectors.toList());
+        // Filter rooms based on availability for the given date range
+        return allRooms.stream().filter(room -> {
+            List<Booking> conflictingBookings = bookingRepository.findOverlappingBookings(
+                    room.getId(), startDate, endDate
+            );
+            return conflictingBookings.isEmpty();  // Room is available if no conflicting bookings exist
+        }).collect(Collectors.toList());
     }
+
 
     // Get a room by ID
     public Room findRoomById(Long id) {

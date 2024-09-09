@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-const Home = () => {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    // Fetch message from backend
-    fetch('http://localhost:8080/home')
-      .then(response => response.text())
-      .then(data => setMessage(data))
-      .catch(error => console.error('Error fetching home message:', error));
-  }, []);
-
+function Home() {
   return (
     <div>
-      <h1>{message}</h1>
+      <h1>Welcome to the Home Page!</h1>
+      <p>You are successfully logged in.</p>
+      
+      {/* Navigation buttons */}
+      <div>
+        <Link to="/map">
+          <button>View Room Map</button>
+        </Link>
+        {/* Add more buttons for navigation as needed */}
+      </div>
     </div>
   );
-};
+}
 
 export default Home;

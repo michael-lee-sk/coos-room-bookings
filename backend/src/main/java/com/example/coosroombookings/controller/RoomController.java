@@ -1,4 +1,3 @@
-
 package com.example.coosroombookings.controller;
 
 import com.example.coosroombookings.model.Room;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +32,17 @@ public class RoomController {
         return ResponseEntity.status(201).body(savedRoom);
     }
 
+    // Updated endpoint for available rooms
     @GetMapping("/available")
-    public List<Room> getAvailableRooms(@RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+    public List<Room> getAvailableRooms(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate
+    ) {
+        // If no start and end dates are provided, check current availability
+        if (startDate == null || endDate == null) {
+            startDate = LocalDateTime.now();
+            endDate = startDate.with(LocalTime.MAX); // Default to the end of the current day
+        }
         return roomService.getAvailableRooms(startDate, endDate);
     }
 

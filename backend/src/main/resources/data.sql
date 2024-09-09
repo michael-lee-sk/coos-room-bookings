@@ -20,12 +20,19 @@ INSERT INTO user_role (user_id, role_id) VALUES (1, 2);  -- admin is an ADMIN
 INSERT INTO user_role (user_id, role_id) VALUES (2, 1);  -- john is a USER
 
 -- Insert initial rooms
-INSERT INTO room (name, capacity) VALUES ('Conference Room', 10);
-INSERT INTO room (name, capacity) VALUES ('Meeting Room', 5);
-INSERT INTO room (name, capacity) VALUES ('Training Room', 20);
+INSERT INTO room (name, capacity) VALUES ('Room 101', 10);
+INSERT INTO room (name, capacity) VALUES ('Room 102', 5);
+INSERT INTO room (name, capacity) VALUES ('Room 103', 20);
+INSERT INTO room (name, capacity) VALUES ('Room 104', 15);
+INSERT INTO room (name, capacity) VALUES ('Room 105', 8);
+INSERT INTO room (name, capacity) VALUES ('Room 106', 12);
+INSERT INTO room (name, capacity) VALUES ('Room 107', 6);
+INSERT INTO room (name, capacity) VALUES ('Room 108', 10);
+INSERT INTO room (name, capacity) VALUES ('Room 109', 14);
+INSERT INTO room (name, capacity) VALUES ('Room 110', 18);
 
--- Insert initial bookings
-INSERT INTO booking (user_id, room_id, start_time, end_time)
-VALUES (2, 1, '2024-09-10 09:00:00', '2024-09-10 10:00:00');
-INSERT INTO booking (user_id, room_id, start_time, end_time)
-VALUES (2, 2, '2024-09-11 14:00:00', '2024-09-11 15:00:00');
+-- Insert sample bookings with valid dates
+INSERT INTO booking (user_id, room_id, start_date, end_date)
+VALUES (2, 1, '2024-09-10', '2024-09-10');
+INSERT INTO booking (user_id, room_id, start_date, end_date)
+VALUES (2, 2, '2024-09-11', '2024-09-11');

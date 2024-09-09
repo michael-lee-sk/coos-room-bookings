@@ -17,14 +17,14 @@ public class SecurityConfig {
                 .cors().and()  // Enable CORS
                 .csrf().disable()  // Disable CSRF for now
                 .authorizeRequests()
-                .antMatchers("/", "/oauth2/**", "/error").permitAll()  // Public access
-                .anyRequest().authenticated()  // All other routes require authentication
+                .antMatchers("/", "/oauth2/**", "/error").permitAll()  // Allow public access
+                .anyRequest().authenticated()  // Protect all other routes
                 .and()
                 .oauth2Login()
-                .defaultSuccessUrl("/home", true)  // Redirect to /home after successful login
+                .defaultSuccessUrl("http://localhost:3000/home", true)  // Redirect to frontend after login
                 .and()
                 .logout()
-                .logoutSuccessUrl("/")  // Redirect to root after logout
+                .logoutSuccessUrl("http://localhost:3000/")  // Redirect to frontend after logout
                 .permitAll();
 
         return http.build();
